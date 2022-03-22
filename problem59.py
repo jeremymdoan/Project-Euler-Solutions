@@ -1,3 +1,5 @@
+# https://projecteuler.net/problem=59
+
 from itertools import permutations
 
 def decrypt(A, key):

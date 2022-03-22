@@ -1,3 +1,5 @@
+# https://projecteuler.net/problem=60
+
 import sympy as sp
 from itertools import combinations
 
@@ -23,6 +25,7 @@ for permu in combinations(sp.primerange(3, 1000), 4):
     if test_prime_concat(permu):
         candidates.append(permu)
 
+print("we have the following candidates: {0}".format(candidates))
 candidates2 = []
 for permu in candidates:
     print("testing {0}".format(permu))
@@ -33,7 +36,7 @@ for permu in candidates:
         P2 = P
         P2.append(p)
         i+=1
-        if i%100000 == 0:
+        if i%1000 == 0:
             print('i = {1}, working on {0}'.format(permu, i))
         is_prime = True
         if test_prime_concat(P2):

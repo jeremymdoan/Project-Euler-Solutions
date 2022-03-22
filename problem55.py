@@ -1,4 +1,4 @@
-
+# https://projecteuler.net/problem=55
 
 def reverseNum(num):
     return int(str(num)[::-1])

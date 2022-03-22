@@ -1,3 +1,6 @@
+# https://projecteuler.net/problem=54
+# I haven't completed this one yet
+
 from collections import Counter
 
 face_cards = {'A':14, 'K':13, 'Q':12, 'J':11, 'T':10}

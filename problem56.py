@@ -1,3 +1,4 @@
+# https://projecteuler.net/problem=56
 
 def sumDigits(num):
     return sum([int(i) for i in list(str(num))])
