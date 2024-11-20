@@ -1,5 +1,4 @@
 # https://projecteuler.net/problem=54
-# I haven't completed this one yet
 
 from collections import Counter
 
