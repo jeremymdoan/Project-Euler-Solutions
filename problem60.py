@@ -1,50 +1,40 @@
 # https://projecteuler.net/problem=60
+# stole the idea for nested loops from here: 
+# # https://radiusofcircle.blogspot.com/2016/10/problem-60-project-euler-solution-with.html
 
 import sympy as sp
 from itertools import combinations
+import time
 
-limit = 2000
-limit2 = limit * 30
+start = time.time()
+
+limit = 10000
 
 def concate(a,b):
     return int(str(a)+str(b))
 
-def test_prime_concat(permu):
-    is_prime = True
-    for comb in combinations(permu, 2):
-        a, b = comb[0], comb[1]
-        #print('checking {0} and {1}'.format(concate(a, b), concate(b, a)))
-        if not sp.isprime(concate(a, b)) or not sp.isprime(concate(b, a)):
-            #print('found a composite')
-            is_prime = False
-            break
-    if is_prime:
-        print('this seems to be one: {0}'.format(permu))
+def test_prime_concat(a, b):
+    is_prime = False
+    if sp.isprime(concate(a, b)) and sp.isprime(concate(b, a)):
+        #print('found a composite')
+        is_prime = True
     return is_prime
 
+def prime_set():
+    for a in sp.primerange(3, limit):
+        for b in sp.primerange(a+1, limit):
+            if test_prime_concat(a,b):
+                for c in sp.primerange(b+1, limit):
+                    if test_prime_concat(a,c) and test_prime_concat(b,c):
+                        for d in sp.primerange(c+1, limit):
+                            if test_prime_concat(a,d) and test_prime_concat(b,d) and test_prime_concat(c,d):
+                                for e in sp.primerange(d+1, limit):
+                                    if test_prime_concat(a,e) and test_prime_concat(b,e) and test_prime_concat(c,e) and test_prime_concat(d,e):
+                                        return [a,b,c,d,e]
 
-def test_candidate(permu):
-    P = list(permu)
-    m = max(P)
-    i = 0
-    is_it = False
-    for p in sp.primerange(m+1, limit2):
-        P2 = P.copy()
-        P2.append(p)
-        i+=1
-        if i%1000 == 0:
-            print('i = {1}, working on {0}'.format(P2, i))
-        if test_prime_concat(P2):
-            print("for {0} sum is {1}".format(P2, sum(list(P2))))
-            is_it = True
-            break
-    return is_it
+P = prime_set()
+print('set is {0} and sum is {1}'.format(P, sum(P)))
 
-for permu in combinations(sp.primerange(3, limit), 4):
-    if test_prime_concat(permu):
-        if test_candidate(permu):
-            print("thats it!")
+end = time.time()
 
-
-
-  
+print("run time is {0}".format(end-start))
