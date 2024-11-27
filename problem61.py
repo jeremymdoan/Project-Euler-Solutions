@@ -2,45 +2,29 @@
 
 import MathFunctions as mf
 
-def first_two_digits(n):
-    return int(str(n)[:2])
-
-def last_two_digits(n):
-    return int(str(n)[-2:])
+def compare_digits(n1, n2):
+    digits1 = int(str(n1)[-2:])
+    digits2 = int(str(n2)[:2])
+    return digits1 == digits2
 
 def is_cyclic(array):
-    result = True
-    for i in range(0,len(array)-1):
-        if last_two_digits(array[i]) != first_two_digits(array[i+1]):
-            result = False
-    if last_two_digits(array[-1]) != first_two_digits(array[0]):
-        result = False
-    return result
+    len_array = len(array)
+    A = [array[0]]
+    while len(array) > 0:
+        num1 = A[-1]
+        array.pop(array.index(num1))
+        found_one = False
+        for num2 in array:
+            if compare_digits(num1, num2):
+                A.append(num2)
+                found_one = True
+                break
+        if not found_one:
+            break
+    if len(A) == len_array and compare_digits(A[-1], A[0]):
+        return True
+    return False
 
-def starting_n_num(n=2, dict_num=0):
-    is_correct = check_function_dict[n_dict[dict_num]](n)
-    while not is_correct:
-        n += 1
-        is_correct = check_function_dict[n_dict[dict_num]](n)
-    return n
-
-def next_n_num(p, dict_num=0):
-    num_type = n_dict[dict_num]
-    solutions = find_n[num_type](p)
-    n = solutions[0] if mf.is_pos_integer(solutions[0]) else solutions[1]
-    return num_function_dict[num_type](n+1)
-
-def next_cyclic(n):
-    return last_two_digits(n) * 100
-
-n_dict = {
-    0: 'triag', 
-    1: 'square', 
-    2: 'penta', 
-    3: 'hexa', 
-    4: 'hepta', 
-    5: 'octa'
-    }
 num_function_dict = {
     'triag': mf.triangle_num, 
     'square': lambda n: int(n**2), 
@@ -49,51 +33,57 @@ num_function_dict = {
     'hepta': mf.heptagonal_num,
     'octa': mf.octagonal_num
     }
-check_function_dict = {
-    'triag': mf.triangle_check, 
-    'square': mf.is_square, 
-    'penta': mf.pentagonal_check,
-    'hexa': mf.hexagonal_check,
-    'hepta': mf.heptagonal_check,
-    'octa': mf.octagonal_check
-    }
-find_n = {
-    'triag': lambda p: mf.quadratic_solution(1, 1, -2*p), 
-    'square': lambda p: mf.quadratic_solution(1, 0, -p),
-    'penta': lambda p: mf.quadratic_solution(3, -1, -2*p),
-    'hexa': lambda p: mf.quadratic_solution(2, -1, -p),
-    'hepta': lambda p: mf.quadratic_solution(5, -3, -2*p),
-    'octa': lambda p: mf.quadratic_solution(3, -2, -p)
-}
 
-def cyclic_array(n):
-    good = False
-    triag_num = 7875 #starting_n_num(1000, 0)
-    A = [triag_num for i in range(0,n)]
-    while not good:
-        A[0] = triag_num
-        twos_good = False
-        num2 = starting_n_num(next_cyclic(A[0]), 1)
-        while not twos_good:
-            A[1] = num2
-            if last_two_digits(A[0]) != first_two_digits(A[1]):
-                break
-            threes_good = False
-            num3 = starting_n_num(next_cyclic(A[1]), 2)
-            while not threes_good:
-                A[2] = num3
-                if last_two_digits(A[1]) != first_two_digits(A[2]):
+num_types = ['triag','square', 'penta','hexa','hepta','octa']
+
+nums = { \
+            num_type: [ \
+                num_function_dict[num_type](i) \
+                for i in range(150) \
+                if num_function_dict[num_type](i)> 1000 \
+                    and num_function_dict[num_type](i) < 10000 \
+             ] \
+            for num_type in num_types \
+        }
+
+def find_cyclic():
+    A = []
+    nums_keys = list(nums.keys())
+    current_key = nums_keys[0]
+    n1 = nums[current_key][0]
+    found_it = False
+    nums2 = nums.copy()
+    while len(nums2) > 0:
+        for i in list(nums2.keys()):
+            if i == current_key:
+                continue
+            for n2 in nums2[i]:
+                if compare_digits(n1, n2):
+                    A.append(n1)
+                    found_it = True
+                    n1 = n2
+                    nums2.pop(i)
                     break
-                threes_good = is_cyclic(A)
-                if not threes_good:
-                    num3 = next_n_num(num3, 2)
-                print(A)
-            num2 = next_n_num(num2, 1)
-            twos_good = threes_good
-        triag_num = next_n_num(triag_num, 0)
-        good = twos_good
+            if found_it:
+                break
+        if found_it:
+            current_key = i
+            found_it = False
+        else:
+            nums2[current_key].pop(0)
+            if len(nums2[0]) == 0:
+                nums2.pop(0)
+            else:
+                n1 = nums2[0][0]            
+        if (len(nums2) == 0 and len(A) < len(nums)) \
+            or (len(A) == len(nums) and not compare_digits(A[0],A[-1])):
+            nums2 = nums.copy()
+            A = []
+            nums_keys = list(nums2.keys())
+            current_key = nums_keys[0]
+            nums2[current_key].pop(0)
+            n1 = nums2[current_key][0]
     return A
 
-print(cyclic_array(3))
-#print(find_n['square'](2809))
-#print(num_function_dict['square'](91))
+                
+print(find_cyclic())
