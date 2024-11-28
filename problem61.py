@@ -8,24 +8,6 @@ def compare_digits(n1, n2):
     digits2 = int(str(n2)[:2])
     return digits1 == digits2
 
-def is_cyclic(array):
-    len_array = len(array)
-    array2 = [array[0]]
-    while len(array) > 0:
-        num1 = array2[-1]
-        array.pop(array.index(num1))
-        found_one = False
-        for num2 in array:
-            if compare_digits(num1, num2):
-                array2.append(num2)
-                found_one = True
-                break
-        if not found_one:
-            break
-    if len(array2) == len_array and compare_digits(array2[-1], array2[0]):
-        return True
-    return False
-
 num_function_dict = {
     'triag': mf.triangle_num, 
     'square': lambda n: int(n**2), 
