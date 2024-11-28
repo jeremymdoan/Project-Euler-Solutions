@@ -1,6 +1,7 @@
 # https://projecteuler.net/problem=61
 
 import MathFunctions as mf
+import time
 
 def compare_digits(n1, n2):
     digits1 = int(str(n1)[-2:])
@@ -9,19 +10,19 @@ def compare_digits(n1, n2):
 
 def is_cyclic(array):
     len_array = len(array)
-    A = [array[0]]
+    array2 = [array[0]]
     while len(array) > 0:
-        num1 = A[-1]
+        num1 = array2[-1]
         array.pop(array.index(num1))
         found_one = False
         for num2 in array:
             if compare_digits(num1, num2):
-                A.append(num2)
+                array2.append(num2)
                 found_one = True
                 break
         if not found_one:
             break
-    if len(A) == len_array and compare_digits(A[-1], A[0]):
+    if len(array2) == len_array and compare_digits(array2[-1], array2[0]):
         return True
     return False
 
@@ -40,50 +41,55 @@ nums = { \
             num_type: [ \
                 num_function_dict[num_type](i) \
                 for i in range(150) \
-                if num_function_dict[num_type](i)> 1000 \
-                    and num_function_dict[num_type](i) < 10000 \
-             ] \
+                if 1000 < num_function_dict[num_type](i) < 10000 \
+                ] \
             for num_type in num_types \
         }
 
 def find_cyclic():
-    A = []
+    target_len = len(nums)
     nums_keys = list(nums.keys())
-    current_key = nums_keys[0]
-    n1 = nums[current_key][0]
-    found_it = False
-    nums2 = nums.copy()
-    while len(nums2) > 0:
-        for i in list(nums2.keys()):
-            if i == current_key:
+    k = 'triag'
+    for n in nums[k]:
+        for k1 in nums_keys:
+            if k1 == k:
                 continue
-            for n2 in nums2[i]:
-                if compare_digits(n1, n2):
-                    A.append(n1)
-                    found_it = True
-                    n1 = n2
-                    nums2.pop(i)
-                    break
-            if found_it:
-                break
-        if found_it:
-            current_key = i
-            found_it = False
-        else:
-            nums2[current_key].pop(0)
-            if len(nums2[0]) == 0:
-                nums2.pop(0)
-            else:
-                n1 = nums2[0][0]            
-        if (len(nums2) == 0 and len(A) < len(nums)) \
-            or (len(A) == len(nums) and not compare_digits(A[0],A[-1])):
-            nums2 = nums.copy()
-            A = []
-            nums_keys = list(nums2.keys())
-            current_key = nums_keys[0]
-            nums2[current_key].pop(0)
-            n1 = nums2[current_key][0]
-    return A
+            for n1 in nums[k1]:
+                if compare_digits(n,n1):
+                    for k2 in nums_keys:
+                        if k2 == k1 or k2 == k:
+                            continue
+                        for n2 in nums[k2]:
+                            if compare_digits(n1,n2):
+                                for k3 in nums_keys:
+                                    if k3 == k2 \
+                                            or k3 == k1 \
+                                            or k3 == k:
+                                        continue
+                                    for n3 in nums[k3]:
+                                        if compare_digits(n2,n3):
+                                            for k4 in nums_keys:
+                                                if k4 == k3 \
+                                                        or k4 == k2 \
+                                                        or k4 == k1 or \
+                                                        k4 == k:
+                                                    continue
+                                                for n4 in nums[k4]:
+                                                    if compare_digits(n3,n4):
+                                                        for k5 in nums_keys:
+                                                            if k5 == k4 \
+                                                                or k5 == k3 \
+                                                                or k5 == k2 \
+                                                                or k5 == k1 \
+                                                                or k5 == k:
+                                                                continue
+                                                            for n5 in nums[k5]:
+                                                                if compare_digits(n4,n5):
+                                                                    if compare_digits(n5,n):
+                                                                        return [n,n1,n2,n3,n4,n5]
 
-                
-print(find_cyclic())
+start = time.time()
+the_array = find_cyclic()
+end = time.time()
+the_sum = sum(the_array) if the_array else 0
+print(the_array,the_sum, end-start)
